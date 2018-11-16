@@ -153,7 +153,6 @@ with xlsxwriter.Workbook(xlsx_path) as workbook:
 
 with open(os.path.join(path, 'param')) as param:
     auth_token = param.readline()
-    print(auth_token)
 
 with open(xlsx_path, 'rb') as f:
     data = f.read()
@@ -170,3 +169,5 @@ res = client.files_upload(
     mode,
     mute=True
 )
+
+os.remove(xlsx_path)
