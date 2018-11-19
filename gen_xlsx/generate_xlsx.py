@@ -1,6 +1,7 @@
 import xlsxwriter
 import os
 
+from get_data import get_data
 from gen_xlsx._util import *
 
 
@@ -37,8 +38,12 @@ def run(path):
             1: workbook.add_format({'border': True, 'fg_color': '#E0E0E0'}),
         }
 
-        for l in open(os.path.join(path, "extract.csv"), encoding='utf8'):
-            cours, role, firstname, lastname, abo = l.replace('"', '').strip().split(",")
+        for line in get_data():
+            cours = line["niveau"]
+            role = line["role"]
+            firstname = line["firstname"]
+            lastname = line["lastname"]
+            abo = line["abo"]
 
             if cours != last_cours:
                 if worksheet:
@@ -80,7 +85,11 @@ def run(path):
                 worksheet.write_row(next(c), 1, out_line, format_dict["bold_border"])
 
             index = next(c)
-            worksheet.write_row(index, 1, [firstname, lastname, abo, *(" " * (1 + nb_jour))], format_dict["line"][index % 2])
+            worksheet.write_row(
+                index, 1,
+                [firstname, lastname, abo, *(" " * (1 + nb_jour))],
+                format_dict["line"][index % 2]
+            )
             max_1 = max(max_1, len(firstname))
             max_2 = max(max_2, len(lastname))
             last_cours = cours

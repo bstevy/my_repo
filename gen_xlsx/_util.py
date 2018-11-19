@@ -58,7 +58,6 @@ def gen_footer(worksheet, cours, format_dict, compteur, max_line, footer_lines=8
 
     :param worksheet:
     :param cours:
-    :param nb_jour:
     :param format_dict:
     :param compteur:
     :param max_line:
