@@ -13,24 +13,26 @@ def run(path):
     xlsx_name = "presence_{date}.xlsx".format(date=month_name)
     xlsx_path = os.path.join(path, xlsx_name)
 
-    with xlsxwriter.Workbook(xlsx_path) as workbook:
+    with xlsxwriter.Workbook(xlsx_path, {'constant_memory': True}) as workbook:
 
-        bold_border = workbook.add_format({
+        format_dict = dict()
+
+        format_dict["bold_border"] = workbook.add_format({
             'bold': True,
             'border': True,
         })
-        border = workbook.add_format({'border': True})
-        bold = workbook.add_format({'bold': True})
+        format_dict["border"] = workbook.add_format({'border': True})
+        format_dict["bold"] = workbook.add_format({'bold': True})
         worksheet = None
 
-        merge_format = workbook.add_format({
+        format_dict["merge_format"] = workbook.add_format({
             'bold': 1,
             'border': 1,
             'align': 'center',
             'valign': 'vcenter'
         })
 
-        line = {
+        format_dict["line"] = {
             0: workbook.add_format({'border': True}),
             1: workbook.add_format({'border': True, 'fg_color': '#E0E0E0'}),
         }
@@ -40,17 +42,7 @@ def run(path):
 
             if cours != last_cours:
                 if worksheet:
-                    _ = next(c)
-                    _ = next(c)
-                    out_line = gen_out_line(cours)
-                    worksheet.write_row(next(c), 1, out_line, bold_border)
-                    for _ in range(3):
-                        worksheet.write_row(next(c), 1, list(" " * (4 + nb_jour)), border)
-                    index = next(c) + 1
-                    worksheet.merge_range(index, 1, index, 2, 'total présence', merge_format)
-                    worksheet.write_row(index, 4, list(" " * nb_jour), bold_border)
-                    worksheet.set_column(1, 1, int(max_1 * 1.25))
-                    worksheet.set_column(2, 2, int(max_2 * 1.25))
+                    gen_footer(worksheet, last_cours, format_dict, c, (max_1, max_2))
 
                 last_role = ""
                 if cours == "LuHH_2":
@@ -64,8 +56,8 @@ def run(path):
                         worksheet = workbook.add_worksheet(cours)
                     c = compteur()
                     max_1 = max_2 = 0
-                worksheet.write(next(c), 1, cours, bold)
-                worksheet.write(next(c), 1, month, bold)
+                worksheet.write(next(c), 1, cours, format_dict["bold"])
+                worksheet.write(next(c), 1, month, format_dict["bold"])
                 worksheet.set_column(0, 0, 1)
                 worksheet.fit_to_pages(1, 1)
                 nb_jour = get_nb_jour(cours)
@@ -75,6 +67,8 @@ def run(path):
                 worksheet.set_margins(
                     left=0.25,
                     right=0.25,
+                    top=0.25,
+                    bottom=0.25,
                 )
 
             if role != last_role:
@@ -83,25 +77,15 @@ def run(path):
                 out_line = gen_out_line(cours)
                 out_line[0] = role
                 out_line[2] = "abo"
-                worksheet.write_row(next(c), 1, out_line, bold_border)
+                worksheet.write_row(next(c), 1, out_line, format_dict["bold_border"])
 
             index = next(c)
-            worksheet.write_row(index, 1, [firstname, lastname, abo, *(" " * (1 + nb_jour))], line[index % 2])
+            worksheet.write_row(index, 1, [firstname, lastname, abo, *(" " * (1 + nb_jour))], format_dict["line"][index % 2])
             max_1 = max(max_1, len(firstname))
             max_2 = max(max_2, len(lastname))
             last_cours = cours
             last_role = role
 
-        _ = next(c)
-        _ = next(c)
-        out_line = gen_out_line(cours)
-        worksheet.write_row(next(c), 1, out_line, bold_border)
-        for _ in range(3):
-            worksheet.write_row(next(c), 1, list(" " * (4 + nb_jour)), border)
-        index = next(c) + 1
-        worksheet.merge_range(index, 1, index, 2, 'total présence', merge_format)
-        worksheet.write_row(index, 4, list(" " * nb_jour), bold_border)
-        worksheet.set_column(1, 1, int(max_1 * 1.25))
-        worksheet.set_column(2, 2, int(max_2 * 1.25))
+        gen_footer(worksheet, cours, format_dict, c, (max_1, max_2))
 
     return xlsx_path

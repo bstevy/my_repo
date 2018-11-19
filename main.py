@@ -8,6 +8,8 @@ path = os.path.dirname(
     os.path.abspath(__file__)
 )
 
+# path = os.path.abspath(os.curdir)
+
 
 def main():
 
