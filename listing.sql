@@ -13,7 +13,7 @@ users.lastname,
 concat(
 case
             when cmd.validite = date '2019-07-31' then 'A'
-            when cmd.validite = date '2018-12-31' then 'T'
+            when cmd.validite = date '2019-03-31' then 'T'
             else ''
         end, 
 		case when cmd.id_user2 is null then '' else 'D' end,
@@ -26,5 +26,6 @@ inner join commande cmd on users.id in (cmd.id_user1, cmd.id_user2)
 where ic.validite >= CURRENT_DATE
 and 'annule' not in (ic.status, cmd.status)
 and cmd.validite >= CURRENT_DATE
+and c.id <> 9
 order by c.id, ic.role, users.firstName, users.lastname, abo
 ;
