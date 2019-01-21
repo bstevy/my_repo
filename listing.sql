@@ -20,7 +20,8 @@ case
 		case when cmd.illimite = 1 then 'I' else '' end,
 		case when cmd.reduit = 1 then 'R' else '' end
 ) as abo
-FROM `users` inner join inscription_cours ic on users.id = ic.id_user 
+FROM `users`
+inner join inscription_cours ic on users.id = ic.id_user
 inner join cours c on c.id = ic.id_cours 
 inner join commande cmd on users.id in (cmd.id_user1, cmd.id_user2)
 where ic.validite >= CURRENT_DATE
