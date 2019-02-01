@@ -4,10 +4,10 @@ from (
 select
 concat(
 	substring(c.jour,1, 2),
-	case when c.type_cours = "Hip Hop" then "HH"
-	when c.type_cours = "Waak/Street jazz" then "WSJ"
+	case when c.type_cours = 'Hip Hop' then 'HH'
+	when c.type_cours = 'Waak/Street jazz' then 'WSJ'
 	else c.type_cours end,
-	"_",
+	'_',
 	c.niveau
 ) as niveau, 
 ic.role,
@@ -39,7 +39,7 @@ select
 concat(
 	substring(c.jour,1, 2),
 	c.type_cours,
-	"_",
+	'_',
 	c.niveau
 ) as niveau,
 ic.role,
